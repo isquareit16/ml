@@ -1,0 +1,54 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+# Load data
+df = pd.read_csv("temperatures.csv")
+
+# Count where JAN == 22
+count = (df["JAN"] == 22).sum()
+print("Count of JAN=22:", count)
+
+# Check zeros
+print("Zeros in each column:\n", (df == 0).sum())
+
+# Check null values
+print("Missing values:\n", df.isnull().sum())
+
+# Select features
+x = df["YEAR"].values.reshape(-1, 1)
+y = df["ANNUAL"]
+
+# Plot data
+sns.scatterplot(x=df["YEAR"], y=df["ANNUAL"])
+plt.title("Year vs Annual Temperature")
+plt.show()
+
+# Split data
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25)
+print(x_train.shape, y_train.shape)
+print(x_test.shape, y_test.shape)
+
+# Train model
+model = LinearRegression()
+model.fit(x_train, y_train)
+
+# Predict
+y_pred = model.predict(x_test)
+
+# Plot regression line
+plt.scatter(x_train, y_train, color='blue')
+plt.plot(x_test, y_pred, color='red', linewidth=3)
+plt.title("Temperature vs Year")
+plt.xlabel("Year")
+plt.ylabel("Temperature")
+plt.show()
+
+# Evaluate
+print(f"MSE:  {mean_squared_error(y_test, y_pred)}")
+print(f"MAE:  {mean_absolute_error(y_test, y_pred)}")
+print(f"R²:  {r2_score(y_test, y_pred)}")
