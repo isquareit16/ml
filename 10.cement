@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
+data=pd.read_csv("Concrete_Data.csv")
+data
+data.head()
+x=data[[
+    'Cement (component 1)(kg in a m^3 mixture)',
+    'Water  (component 4)(kg in a m^3 mixture)',
+    'Coarse Aggregate  (component 6)(kg in a m^3 mixture)',
+    'Fine Aggregate (component 7)(kg in a m^3 mixture)']]
+y=data['Concrete compressive strength(MPa, megapascals) ']
+plt.plot(x,y,'o')
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.25)
+print(x_train.shape)
+print(x_test.shape)
+print(y_train.shape)
+print(y_test.shape)
+model=LinearRegression()
+model.fit(x_train,y_train)
+
+y_pred=model.predict(x_test)
+model.intercept_
+
+model.coef_
+y_pred.shape
+plt.scatter(y_test,y_pred,color='blue')
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()],color='red',linewidth=3)
+plt.title("Actual Strength")
+plt.xlabel("Actual Strength")
+plt.ylabel("predicted strength")
+plt.show()
+sns.regplot(x=data["cement"],y=data["concrete strength"])
