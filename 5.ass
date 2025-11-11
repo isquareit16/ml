@@ -1,0 +1,37 @@
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+data=pd.read_csv('Association Rule mining datasets_Market_Basket_Optimisation (1).csv')
+
+data.head()
+import numpy as np
+
+data_values = data.values.astype(str)
+mask = ~pd.isna(data.values)
+transactions = [list(row[mask[i]]) for i, row in enumerate(data_values)]
+
+from mlxtend.preprocessing import TransactionEncoder
+te = TransactionEncoder()
+te_data = te.fit_transform(transactions)
+df = pd.DataFrame(te_data, columns=te.columns_)
+frequent_itemsets = apriori(df, min_support=0.02, use_colnames=True)
+rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.5)
+print(rules.head())
+import matplotlib.pyplot as plt
+
+# Plot top 10 frequent itemsets
+frequent_itemsets.sort_values(by='support', ascending=False).head(10).plot(
+    x='itemsets', y='support', kind='bar', legend=False)
+plt.title('Top 10 Frequent Itemsets')
+plt.ylabel('Support')
+plt.show()
+# Plot Confidence vs Support
+plt.scatter(rules['support'], rules['confidence'], alpha=0.6)
+plt.xlabel('Support')
+plt.ylabel('Confidence')
+plt.title('Support vs Confidence')
+plt.show()
+
+cake_rules = rules[rules['antecedents'] == {'cake'}] 
+print("\nItems commonly bought with 'cake':") 
+print(cake_rules['consequents']) 
+
